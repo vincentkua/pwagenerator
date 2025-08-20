@@ -111,11 +111,12 @@ export default function App() {
     try {
       const img = await loadImage(file);
 
-      const [icoBlob, png192Blob, png512Blob, manifestResponse] = await Promise.all([
+      const [icoBlob, png192Blob, png512Blob, manifestResponse, indexHtmlResponse] = await Promise.all([
         generateIcoBlob(img),
         generatePngBlob(img, 192),
         generatePngBlob(img, 512),
-        fetch('manifest.json')
+        fetch('Samplemanifest.json'),
+        fetch('Sampleindex.html')
       ]);
 
       if (!manifestResponse.ok) {
@@ -123,11 +124,17 @@ export default function App() {
       }
       const manifestBlob = await manifestResponse.blob();
 
+      if (!indexHtmlResponse.ok) {
+        throw new Error(`Failed to fetch index.html: ${indexHtmlResponse.statusText}`);
+      }
+      const indexHtmlBlob = await indexHtmlResponse.blob();
+
       const zip = new JSZip();
       zip.file("favicon.ico", icoBlob);
       zip.file("192.png", png192Blob);
       zip.file("512.png", png512Blob);
       zip.file("manifest.json", manifestBlob);
+      zip.file("index.html", indexHtmlBlob);
 
       const zipBlob = await zip.generateAsync({ type: "blob" });
       const url = URL.createObjectURL(zipBlob);
@@ -294,9 +301,9 @@ export default function App() {
               <div className="text-center p-4 rounded-lg bg-green-900/50 border border-green-700 animate-fade-in space-y-4">
                 <div>
                     <h3 className="text-lg font-semibold text-green-300">Conversion Successful!</h3>
-                    <p className="text-green-400 text-sm">Your icon package (ZIP) is ready for download.</p>
+                    <p className="text-green-400 text-sm">Your PWA package (ZIP) is ready for download.</p>
                 </div>
-                <ActionButton href={zipBlobUrl} download="icons.zip" >
+                <ActionButton href={zipBlobUrl} download="pwafiles.zip" >
                     <DownloadIcon className="w-5 h-5" /> Download ZIP
                 </ActionButton>
               </div>
@@ -314,7 +321,7 @@ export default function App() {
 
         </main>
         <footer className="text-center mt-8 text-sm text-content-200">
-          <p>&copy; {new Date().getFullYear()} PWA Icon Generator. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} PWA Generator. All rights reserved.</p>
         </footer>
       </div>
     </div>
