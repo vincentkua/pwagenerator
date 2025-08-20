@@ -1,0 +1,5 @@
+{
+  "name": "PWA Maker",
+  "description": "A simple and elegant web application to convert PNG images into ICO files directly in your browser. Upload a PNG, and get a downloadable ICO file instantly.",
+  "requestFramePermissions": []
+}
